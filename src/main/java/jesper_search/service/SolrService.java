@@ -116,6 +116,56 @@ public class SolrService {
     }
 
     /**
+     * 根据经纬度搜索附近200公里的酒店
+     * @param cityLat
+     * @param cityLng
+     * @return
+     * @throws IOException
+     * @throws SolrServerException
+     */
+    public ArrayList<Hotel> rangeSearch(String cityLat, String cityLng) throws IOException, SolrServerException {
+        Float lat = Float.parseFloat(cityLat);
+        Float lng = Float.parseFloat(cityLng);
+
+
+        ArrayList<Hotel> hotels = null;
+        try {
+            solrClient = connetHttpSolrClientServer();
+            QueryResponse rsp = null;
+//            SolrQuery queryStr = new SolrQuery("*:*");
+//            queryStr.addFilterQuery(query);
+            SolrQuery query = new SolrQuery();
+            if (cityLat != null && cityLng != null) {
+                // 使结果集约束在到中心点位置的最大距离（km）圆形区域内。
+                query.addFilterQuery("{!geofilt}");        //距离过滤函数
+                query.set("sfield", "product_pos_rpt"); //指定坐标索引字段
+                query.set("pt", cityLat + "," + cityLng);//当前经纬度
+                query.set("d", 200); //就近 d km的所有数据 //params.set("score", "kilometers");
+                rsp = solrClient.query(coreName, query);
+                hotels = documentList2Hotels(rsp.getResults());
+                System.out.println(hotels);
+            }
+            rsp = solrClient.query(coreName, query);
+            hotels = documentList2Hotels(rsp.getResults());
+            System.out.println(hotels);
+        } catch (IOException | SolrServerException e) {
+            e.printStackTrace();
+            logger.error(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(e.getMessage());
+        } finally {
+            try {
+                solrClient.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+                logger.error(e.getMessage());
+            }
+        }
+        return hotels;
+    }
+
+    /**
      * 按条件查询搜索引擎
      */
 
