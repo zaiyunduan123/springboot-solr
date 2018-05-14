@@ -54,13 +54,7 @@ public class SolrController {
                                     @RequestParam(name = "lng", required = true) String lng) {
         SearchResult result = null;
         ArrayList<Hotel> hotels = null;
-        try {
-            hotels = solrService.rangeSearch(lat, lng);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (SolrServerException e) {
-            e.printStackTrace();
-        }
+        hotels = solrService.rangeSearch(lat, lng);
         result = new SearchResult();
         result.setData(hotels);
         result.setTotal(hotels.size());

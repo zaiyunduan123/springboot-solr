@@ -116,13 +116,14 @@ public class SolrService {
 
     /**
      * 根据经纬度搜索附近200公里的酒店
+     *
      * @param cityLat
      * @param cityLng
      * @return
      * @throws IOException
      * @throws SolrServerException
      */
-    public ArrayList<Hotel> rangeSearch(String cityLat, String cityLng) throws IOException, SolrServerException {
+    public ArrayList<Hotel> rangeSearch(String cityLat, String cityLng) {
         Float lat = Float.parseFloat(cityLat);
         Float lng = Float.parseFloat(cityLng);
 
@@ -131,8 +132,6 @@ public class SolrService {
         try {
             solrClient = connetHttpSolrClientServer();
             QueryResponse rsp = null;
-//            SolrQuery queryStr = new SolrQuery("*:*");
-//            queryStr.addFilterQuery(query);
             SolrQuery query = new SolrQuery();
             if (cityLat != null && cityLng != null) {
                 // 使结果集约束在到中心点位置的最大距离（km）圆形区域内。
@@ -174,8 +173,6 @@ public class SolrService {
         try {
             solrClient = connetHttpSolrClientServer();
             QueryResponse rsp = null;
-//            SolrQuery queryStr = new SolrQuery("*:*");
-//            queryStr.addFilterQuery(query);
             SolrQuery queryStr = new SolrQuery();
             queryStr.setQuery("name:" + query); //搜索关键词
             rsp = solrClient.query(coreName, queryStr);
