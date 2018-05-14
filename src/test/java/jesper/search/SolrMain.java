@@ -1,10 +1,10 @@
-package jesper_search;
+package jesper.search;
 
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
-import jesper_search.bean.Hotel;
+import jesper.search.bean.Hotel;
 
 import java.util.ArrayList;
 import java.util.List;

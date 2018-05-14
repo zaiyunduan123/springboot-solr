@@ -1,4 +1,4 @@
-package jesper_search.bean;
+package jesper.search.bean;
 
 import lombok.Data;
 

@@ -1,7 +1,7 @@
-package jesper_search.mapper;
+package jesper.search.mapper;
 
 import java.util.List;
-import jesper_search.bean.Hotel;
+import jesper.search.bean.Hotel;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper

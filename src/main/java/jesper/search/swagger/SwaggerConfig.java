@@ -1,4 +1,4 @@
-package jesper_search.swagger;
+package jesper.search.swagger;
 
 /**
  * Created by jiangyunxiong on 2018/5/11.

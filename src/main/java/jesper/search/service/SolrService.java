@@ -1,10 +1,9 @@
-package jesper_search.service;
+package jesper.search.service;
 
 import java.io.IOException;
 import java.util.*;
 
-import jesper_search.mapper.HotelMapper;
-import org.apache.juli.logging.Log;
+import jesper.search.mapper.HotelMapper;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrRequest;
@@ -23,7 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import jesper_search.bean.Hotel;
+import jesper.search.bean.Hotel;
 
 @Service
 public class SolrService {

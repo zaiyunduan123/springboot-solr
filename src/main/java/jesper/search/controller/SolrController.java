@@ -1,4 +1,4 @@
-package jesper_search.controller;
+package jesper.search.controller;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import jesper_search.bean.Hotel;
-import jesper_search.bean.SearchResult;
-import jesper_search.service.SolrService;
+import jesper.search.bean.Hotel;
+import jesper.search.bean.SearchResult;
+import jesper.search.service.SolrService;
 
 import java.io.IOException;
 import java.util.ArrayList;
