@@ -40,9 +40,9 @@ public class SolrService {
     @Autowired
     private HotelMapper hotelMapper;
 
-    private String solrEntry = "dvb_hotel";
+    private String solrEntry = "hotel";
 
-    private String coreName = "ykz_hotel_search";
+    private String coreName = "hotel_search";
 
     public static SolrClient solrClient;
 
@@ -75,9 +75,9 @@ public class SolrService {
         try {
             SolrClient solrClient = connetHttpSolrClientServer();
             NamedList<Object> response = solrClient.request(request, coreName);
-            logger.info(new Date() + "ykz_hotel_search 全量重建索引成功，" + response.toString());
+            logger.info(new Date() + "hotel_search 全量重建索引成功，" + response.toString());
         } catch (Exception e) {
-            logger.info(new Date() + "ykz_hotel_search 全量重建索引失败，异常信息：" + e.getMessage());
+            logger.info(new Date() + "hotel_search 全量重建索引失败，异常信息：" + e.getMessage());
             e.printStackTrace();
         }
     }
