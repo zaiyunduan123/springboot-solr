@@ -14,19 +14,23 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.StringUtils;
 import org.apache.solr.common.params.MapSolrParams;
 import org.apache.solr.common.util.NamedList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import jesper.search.bean.Hotel;
 
-@Service
-public class SolrService {
+import javax.annotation.Resource;
 
+@Service("SolrService")
+public class SolrService {
 
     private Logger logger = LoggerFactory.getLogger(SolrService.class);
 
@@ -35,7 +39,6 @@ public class SolrService {
 
     @Autowired
     private HotelMapper hotelMapper;
-
 
     private String solrEntry = "dvb_hotel";
 
@@ -72,9 +75,9 @@ public class SolrService {
         try {
             SolrClient solrClient = connetHttpSolrClientServer();
             NamedList<Object> response = solrClient.request(request, coreName);
-            logger.info(new Date() + "vproduct 全量重建索引成功，" + response.toString());
+            logger.info(new Date() + "ykz_hotel_search 全量重建索引成功，" + response.toString());
         } catch (Exception e) {
-            logger.info(new Date() + "vproduct 全量重建索引失败，异常信息：" + e.getMessage());
+            logger.info(new Date() + "ykz_hotel_search 全量重建索引失败，异常信息：" + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -82,16 +85,15 @@ public class SolrService {
 
     /**
      * 增量索引
-     *
      * @param id
      */
     public void update(String id) {
-        logger.info("更新索引  传入id是" + id);
+        logger.info("更新索引传入id是" + id);
         Hotel bean = hotelMapper.selectByPrimaryKey(Integer.parseInt(id));
         UpdateResponse resp = null;
         try {
             if (bean != null) {
-                resp = solrClient.addBean("vproduct", bean, 60000);
+                resp = solrClient.addBean(coreName, bean, 60000);
                 if (resp.getStatus() != 0) {
                     logger.error("实时更新索引 失败：List=" + bean + "，详细信息："
                             + resp.toString());
@@ -142,6 +144,18 @@ public class SolrService {
                 rsp = solrClient.query(coreName, query);
                 hotels = documentList2Hotels(rsp.getResults());
                 System.out.println(hotels);
+            }else{
+                /**
+                 *  权重排序
+                 *  权重设置的字段
+                 *  1、价格，价格越低越排在前面
+                 *  2、销量，销量越高越排在前面
+                 *  3、好评度，好评度越高越排在前面
+                 */
+
+                String scoreMethod = "sum(linear(div(10000,price),1000,10),linear(count,1.3,3),linear(goodRank,1000,3))";
+                query.set("defType", "edismax");//defType有两种，edismax支持boost函数与score相乘作为，而dismax只能使用bf作用效果是相加
+                query.set("bf", scoreMethod);
             }
             rsp = solrClient.query(coreName, query);
             hotels = documentList2Hotels(rsp.getResults());
@@ -167,7 +181,7 @@ public class SolrService {
      * 按条件查询搜索引擎
      */
 
-    public ArrayList<Hotel> querySolrIndex(String coreName, String query) {
+    public ArrayList<Hotel> querySolrIndex(String query) {
 
         ArrayList<Hotel> hotels = null;
         try {
@@ -192,6 +206,36 @@ public class SolrService {
                 logger.error(e.getMessage());
             }
         }
+        return hotels;
+    }
+
+    /**
+     * 模糊查询
+     *
+     * @return
+     */
+    public ArrayList<Hotel> likeSearch(String name) {
+        SolrQuery query = new SolrQuery();
+        ArrayList<Hotel> hotels = null;
+        if (StringUtils.isEmpty(name)) {
+            query.setQuery("*:*");  //组装查询条件
+        } else if (name.length() == 1) {
+            query.setQuery(name + "*");
+        } else {
+            //整词模糊匹配
+            String searchWord = name;
+            searchWord = searchWord.replaceAll("\\s+", " AND ");
+            query.setQuery("searchText:" + searchWord + " OR name_ws:*" + searchWord + "*");
+        }
+        QueryResponse response = null;
+        try {
+            response = solrClient.query(coreName, query);
+            hotels = documentList2Hotels(response.getResults());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
         return hotels;
     }
 
